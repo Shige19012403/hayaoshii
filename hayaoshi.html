@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>早押しゲーム</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.4.1//jquery.min.js"></script>
+<link rel="shortcut icon" href="パンクな人のフリーアイコン1.png" type="img/png">
+</head>
+
+<style media ="screen">
+	body{
+		background-image: url("wall_w_frame_01.png");
+	}
+	div{
+		text-align: center;
+	}
+	h1{
+		font-size: 60px;
+	}
+</style>
+
+<body>
+	<div>
+		<h1>早押しゲーム！</h1>
+		<p>
+			1人でプレイ：「P」スタート・「S」早押し・「A」やり直し<br>
+			2人でプレイ：「P」スタート・「D」1P早押し・「L」2P早押し・「A」やり直し
+		</p>
+	</div>
+	<div id ="gazou">
+		<img src ="norinori-0012-removebg-preview.png" alt="ノリノリな食パン">
+	</div>
+	<div>
+		<p id ="dame"></p>
+		<p id ="ok"></p>
+		<p id = "koushin">「A」で再度プレイ！</p>
+	</div>
+	<script>
+		var start = null;
+		var stop = null;
+		var byou = 0;
+		var mil = 0;
+		var a = 0;
+		var b = 0;
+
+		const bu = document.getElementById("dame");
+		const ye = document.getElementById("ok");
+		const ga = document.getElementById("gazou");
+		const ko = document.getElementById("koushin");
+
+		bu.style.display = "none";
+		ye.style.display = "none";
+		ko.style.display = "none";
+
+		const kazu = (Math.random() * 9) + 3;
+
+		const audioElm = new Audio("https://mozeen.com/musicfiles/banbado_piano.mp3");
+		const kettei = new Audio("和太鼓でドン.mp3");
+		const shippai = new Audio("スタジアムの歓声2.mp3");
+		const seikou = new Audio("歓声と拍手2.mp3");
+		const daiseikou = new Audio("歓声と拍手1.mp3");
+
+
+		$(document).keydown(function(event){
+			//音楽スタート
+			if(event.key == "p" && a == 0){
+				a++;
+				audioElm.play();
+				bu.style.display = "none";
+				ye.style.display = "none";
+				ga.innerHTML = '<img src="norinori.gif" alt="ノリノリな食パン">';
+
+				$(function(){
+					setTimeout(function(){
+						audioElm.pause();
+						start = Date.now();
+					}, kazu * 1000);
+				});
+			
+			//１人プレイ
+			}else if(event.key == "s" && a==1 && b == 0){
+				b++;
+				stop = Date.now();
+				audioElm.pause();
+				kettei.play();
+
+				$(function(){
+					setTimeout(function() {
+						if(start == null){
+							//やり直し
+							ga.innerHTML = '<img src="pose_yareyare_man.png" alt="拍手"　width = "599" height ="327">';
+							bu.innerHTML ="お手付き…";
+							bu.style.display = "block";
+							shippai.play();
+						}else{
+							//成功
+							var kekka = stop - start;
+
+							if(kekka > 999){
+								mil = kekka % 1000;
+								byou = (kekka - mil) / 1000;
+								seikou.play();
+								ga.innerHTML = '<img src="Untitled GIF_gifmagazine.gif" alt="拍手"　width = "599" height ="327">';
+								ye.innerHTML +="うーん..." + byou + "." + mil + "秒";
+							}else{
+								mil = kekka;
+								daiseikou.play();
+								ga.innerHTML = '<img src="Untitled GIF_gifmagazinex.gif" alt="拍手" width = "400" height ="327">';
+								ye.innerHTML +="早い！" + byou + "." + mil + "秒";
+							}
+				
+							
+							ye.style.display = "block";
+ 						}
+						 ko.style.display = "block";	
+					}, 800);
+				})
+
+			//2人プレイ	
+			}else if(event.key == "d"　|| event.key == "l" && a==1 && b == 0){
+				b++;
+				stop = Date.now();
+				audioElm.pause();
+				kettei.play();
+
+				$(function(){
+					setTimeout(function() {
+						if(start == null){
+							//お手付き
+							ga.innerHTML = '<img src="pose_yareyare_man.png" alt="拍手"　width = "599" height ="327">';
+							if(event.key =="d"){
+								bu.innerHTML ="お手付き…2Pの勝利";//2win
+							}else{
+								bu.innerHTML ="お手付き…1Pの勝利";//1win
+							}
+							bu.style.display = "block";
+							shippai.play();
+						}else{
+							//成功
+							var kekka = stop - start;
+
+							//ミリ秒→秒
+							if(kekka > 999){
+								mil = kekka % 1000;
+								byou = (kekka - mil) / 1000;
+								seikou.play();
+								ga.innerHTML = '<img src="Untitled GIF_gifmagazine.gif" alt="拍手"　width = "599" height ="327">';
+							}else{
+								mil = kekka;
+								daiseikou.play();
+								ga.innerHTML = '<img src="Untitled GIF_gifmagazinex.gif" alt="拍手" width = "400" height ="327">';
+							}
+							
+							if(event.key =="d"){
+								ye.innerHTML +="1Pの勝利！" + byou + "." + mil + "秒";//1win
+							}else{
+								ye.innerHTML +="2Pの勝利！" + byou + "." + mil + "秒";//2win
+							}
+
+							ye.style.display = "block";
+ 						}
+						ko.style.display = "block";
+					}, 1000);
+				})	
+			
+			//更新
+			}else if(event.key == "a" && b == 1){
+				location.reload();
+			}
+		})
+	</script>
+</body>
+</html>
